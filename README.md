@@ -247,6 +247,10 @@ Also, add the inclusion `#include <stdarg.h>` to the top of `uart_int.c` to make
 
 Take a screenshot of the QEMU display and also a screenshot that shows the output of the logger in the Serial Monitor. Save both of these screenshots in `assets/`.
 
+## Extra Credit Assignment #2
+
+If you want to earn another 15 points of extra credit, then you can update `kprintf` in `vid.c` to also use the `va_list` type, just like `uprintf` in `uart_int.c`. Make the changes, and turn in this new code as part of your repo, and you will earn the extra 15 points.
+
 ## What to Turn In
 
 **Modified Files:**
