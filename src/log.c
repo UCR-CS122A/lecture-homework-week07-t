@@ -1,6 +1,6 @@
 #include <stdarg.h>
 
-#include "debug.h"
+#include "log.h"
 #include "uart_int.h"
 
 char *levels[] = {

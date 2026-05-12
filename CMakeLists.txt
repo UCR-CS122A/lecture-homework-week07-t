@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/arm-none-eabi-toolchain.cmake)
 
-project(lecture_homework_week06-t LANGUAGES C ASM)
+project(lecture_homework_week07-t LANGUAGES C ASM)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -20,7 +20,7 @@ add_executable(${TARGET_NAME}.elf
     src/string.c
     src/kbd.c
     src/uart_int.c
-    src/debug.c
+    src/log.c
 )
 
 add_custom_command(
