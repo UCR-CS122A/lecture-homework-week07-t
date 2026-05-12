@@ -72,7 +72,10 @@ The very last character "W" is displayed, but no other characters after that. Th
 
 Several log messages are already added to the code, and all print out to the QEMU display screen. We see these messages in the following screenshot:
 
-In this screenshot, we see several log messages. The messages all come from code in [`src/uart_int.c`](https://www.google.com/search?q=src/uart_int.c). The `TX interrupt` messages are in the function `do_tx`, just as `RX Interrupt` comes from the function `do_rx`. These log messages indicate that the IRQ handler has fired and the correct interrupt handler has been called. The other log messages come from the `uputc` function. These messages indicate that this function has been called to send a character that has been typed into the display to the terminal via UART0. Type more characters into the display and see how more log messages appear.
+![Screen shot of QEMU app with keyboard events logged in the display](assets/uart_demo_logged_screenshot2.png)
+
+
+In this screenshot, we see several log messages. The messages all come from code in [`src/uart_int.c`](src/uart_int.c). The `TX interrupt` messages are in the function `do_tx`, just as `RX Interrupt` comes from the function `do_rx`. These log messages indicate that the IRQ handler has fired and the correct interrupt handler has been called. The other log messages come from the `uputc` function. These messages indicate that this function has been called to send a character that has been typed into the display to the terminal via UART0. Type more characters into the display and see how more log messages appear.
 
 What we can understand about the UART device driver is that while `uputc` is getting called, the `do_tx` function is only called twice and then never again. If the IRQ handler were working correctly, you would see a `TX Interrupt` message for each character typed and then displayed in the terminal.
 
@@ -113,7 +116,11 @@ The following code does that:
 
 When you recompile and run this code, you should see something like the following:
 
-This screenshot shows that during the first call to `uputc`, the `IMSC` is set to 0x30, meaning the transmit interrupt is enabled, and that `txon` is 0. However, for every other call to `uputc`, the transmit interrupt is off (`IMSC` is 0x1) and `txon` is 1. So what we see happening is that the `txon` remains 1, meaning that the characters are constantly added to the output buffer, and the transmit interrupt is never enabled again. This is the source of the issue we are observing.
+![Screen shot of QEMU app with keyboard events logged in the display](assets/uart_demo_logged_screenshot3.png)
+
+
+
+This screenshot shows that during the first call to `uputc`, the `IMSC` is set to 0x30, meaning the transmit interrupt is enabled, and that `txon` is 0. However, for every other call to `uputc`, the transmit interrupt is off (`IMSC` is 0x10) and `txon` is 1. So what we see happening is that the `txon` remains 1, meaning that the characters are constantly added to the output buffer, and the transmit interrupt is never enabled again. This is the source of the issue we are observing.
 
 Luckily, the fix is simple. Move the code `up->txon = 1` in `uputc` into `do_tx`, as shown below:
 
@@ -234,7 +241,6 @@ int vuprintf(UART* up, const char* fmt, va_list args) {
     cp++;
   }
 }
-
 ```
 
 Also, add the inclusion `#include <stdarg.h>` to the top of `uart_int.c` to make everything compile. Once you've added this code, change all the `printf` calls in `kbd.c` to `LOG_INFO` and remove the `printf` function calls from `uart_int.c`. Do not change these to `LOG_INFO`. This will cause a stack overflow. Next, recompile and run the program. Finally, add the inclusion `#include "log_config.h"` to both files to properly configure the logger for use in these files.
